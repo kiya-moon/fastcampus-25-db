@@ -1,0 +1,20 @@
+#version: '3.8' <<< 요즘엔 버전 명시 없어도 잘 호환됨
+
+services:
+  mysql-db:
+    image: mysql:5.7
+#    container_name: mysql57-container
+    restart: always
+    platform: linux/amd64 # mysql 5.7은 맥북 인텔 버전을 지원하기 때문에 플랫폼을 명시해야함
+    environment:
+      MYSQL_ROOT_PASSWORD: onion1!  # 원하는 비밀번호로 변경하세요.
+      MYSQL_DATABASE: onion-db  # 초기 생성할 데이터베이스 이름
+      MYSQL_USER: onion-user  # 원하는 사용자 이름
+      MYSQL_PASSWORD: onion1!  # 원하는 사용자 비밀번호
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql  # MySQL 데이터를 유지하기 위한 볼륨
+
+volumes:
+  mysql_data:
