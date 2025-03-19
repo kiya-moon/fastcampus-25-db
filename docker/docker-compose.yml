@@ -10,7 +10,7 @@ services:
       MYSQL_ROOT_PASSWORD: onion1!  # 원하는 비밀번호로 변경하세요.
       MYSQL_DATABASE: onion-db  # 초기 생성할 데이터베이스 이름
       MYSQL_USER: onion-user  # 원하는 사용자 이름
-      MYSQL_PASSWORD: onion1!  # 원하는 사용자 비밀번호
+      MYSQL_PASSWORD: onion1! # 원하는 사용자 비밀번호
     ports:
       - "3306:3306"
     volumes:
