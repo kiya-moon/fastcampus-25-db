@@ -6,6 +6,8 @@ import com.onion.backend.jwt.JwtUtil;
 import com.onion.backend.service.CustomUserDetailsService;
 import com.onion.backend.service.UserService;
 import io.swagger.v3.oas.annotations.Parameter;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -55,10 +57,31 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestParam String username, @RequestParam String password) throws AuthenticationException {
+    public String login(@RequestParam String username, @RequestParam String password, HttpServletResponse response) throws AuthenticationException {
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-        return jwtUtil.generateToken(userDetails.getUsername());
+//        return jwtUtil.generateToken(userDetails.getUsername());
+
+        // jwt 로그아웃 방법 1. 클라이언트 측에서 토큰 삭제
+        // 클라이언트(웹 브라우저, 모바일 앱)에서 jwt를 저장하는 localStorage나 sessionStorage, cookie에서 삭제하는 방법
+        String token = jwtUtil.generateToken(userDetails.getUsername());
+        Cookie cookie = new Cookie("onion_token", token);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(60 * 60);  // 이미 발급된 토큰은 만료되기 전까지 유효하므로, JwtUtil에서 설정한 expirationTime과 동일하게 준다
+
+        response.addCookie(cookie);
+        return token;
+    }
+
+    @PostMapping("/logout")
+    public void logout(HttpServletResponse response) {
+        Cookie cookie = new Cookie("onion_token", null);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(0); // 쿠키 삭제
+        response.addCookie(cookie);
     }
 
     @PostMapping("/token/validation")
