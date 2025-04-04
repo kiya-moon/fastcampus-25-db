@@ -43,6 +43,4 @@ public class UserService {
         userRepository.deleteById(id);  // 존재하는 유저를 삭제
     }
 
-    // 로그인 메서드
-
 }
